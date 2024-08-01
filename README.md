@@ -1,50 +1,37 @@
-# Welcome to your Expo app 👋
+# Snapchat Camera Clone
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This project is a React Native-based Snapchat Camera Clone. The app provides various camera tools, such as zoom, flash, and torch options, and allows users to capture and filter images with ease.
 
-## Get started
+## Features
 
-1. Install dependencies
+- Camera Functionality: Capture photos and videos using the device camera.
+- Filter Application: Apply color filters to captured images.
+- QR Code Scanning: Detect and open QR codes using the camera.
+- Picture and Video Preview: Preview captured media with options to save or share.
+- Torch and Flash Control: Toggle torch and flash modes.
+- Camera Facing Toggle: Switch between front and back cameras.
+
+## Installation
+
+1. Clone the repo
+
+   ```bash
+   git clone https://github.com/Riser17/Snapchat-camera.git
+   cd snapchat-camera-clone
+   ```
+
+2. Install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+## Usage
 
-   ```bash
-    npx expo start
-   ```
+- HomeScreen: The main screen of the app where users can capture images or videos, apply filters, and scan QR codes.
+- CameraTools: A component for managing camera options like zoom, flash, and torch.
+- PictureView: A component for previewing the captured image with the option to apply filters, save, or share.
+- VideoViewComponent: A component for previewing captured videos.
 
-In the output, you'll find options to open the app in a
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Previews
