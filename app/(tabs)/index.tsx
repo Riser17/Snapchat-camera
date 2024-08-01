@@ -1,70 +1,135 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useRef, useState, useEffect } from "react";
+import { View, StyleSheet, SafeAreaView } from "react-native";
+import { CameraMode, CameraView, FlashMode } from "expo-camera";
+import * as WebBrowser from "expo-web-browser";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import BottomRowTools from "@/components/BottomRowTools";
+import MainRowActions from "@/components/MainRowActions";
+import { BarCodeScanningResult } from "expo-camera/build/legacy/Camera.types";
+import QRCodeButton from "@/components/QRCodeButton";
+import CameraTools from "@/components/CameraTools";
+import PictureView from "@/components/PictureView";
+import VideoViewComponent from "@/components/VideoView";
 
 export default function HomeScreen() {
+  const cameraRef = useRef<CameraView>(null);
+  const [cameraMode, setCameraMode] = useState<CameraMode>("picture");
+  const [qrCodeDetected, setQrCodeDetected] = useState<string>("");
+  const [isBrowsing, setIsBrowsing] = useState<boolean>(false);
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [cameraZoom, setCameraZoom] = useState<number>(0);
+  const [cameraTorch, setCameraTorch] = useState<boolean>(false);
+  const [cameraFlash, setCameraFlash] = useState<FlashMode>("off");
+  const [cameraFacing, setCameraFacing] = useState<"front" | "back">("back");
+
+  const [picture, setPicture] = useState<string>("");
+  const [video, setVideo] = useState<string>("");
+  const [filterColor, setFilterColor] = useState<string>("transparent");
+
+  async function toggleRecord() {
+    if (isRecording) {
+      cameraRef.current?.stopRecording();
+      setIsRecording(false);
+    } else {
+      setIsRecording(true);
+      const response = await cameraRef.current?.recordAsync();
+      setVideo(response!.uri);
+    }
+  }
+
+  async function handleTakePicture() {
+    const response = await cameraRef.current?.takePictureAsync();
+
+    console.log("Captured Image URI:", response!.uri);
+    setPicture(response!.uri);
+  }
+
+  async function handleOpenQRCode() {
+    setIsBrowsing(true);
+    const browserResult = await WebBrowser.openBrowserAsync(qrCodeDetected, {
+      presentationStyle: WebBrowser.WebBrowserPresentationStyle.FORM_SHEET,
+    });
+    if (browserResult.type === "cancel") {
+      setIsBrowsing(false);
+    }
+  }
+
+  function handleBarcodeScanned(scanningResult: BarCodeScanningResult) {
+    if (scanningResult.data) {
+      console.log(scanningResult.data);
+      setQrCodeDetected(scanningResult.data);
+    }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      setQrCodeDetected("");
+    }, 1000);
+  }
+
+  if (isBrowsing) return <></>;
+  if (picture)
+    return (
+      <PictureView
+        picture={picture}
+        setPicture={setPicture}
+        colors={filterColor}
+      />
+    );
+  if (video) return <VideoViewComponent video={video} setVideo={setVideo} />;
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <View style={{ flex: 1 }}>
+      <CameraView
+        ref={cameraRef}
+        mode={cameraMode}
+        zoom={cameraZoom}
+        flash={cameraFlash}
+        enableTorch={cameraTorch}
+        facing={cameraFacing}
+        barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
+        onBarcodeScanned={handleBarcodeScanned}
+        style={{ flex: 1 }}
+      >
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: filterColor,
+            opacity: filterColor === "transparent" ? 0 : 0.3,
+          }}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={{ flex: 1 }}>
+            {qrCodeDetected ? (
+              <QRCodeButton handleOpenQRCode={handleOpenQRCode} />
+            ) : null}
+            <CameraTools
+              cameraZoom={cameraZoom}
+              cameraFlash={cameraFlash}
+              cameraTorch={cameraTorch}
+              setCameraZoom={setCameraZoom}
+              setCameraFacing={setCameraFacing}
+              setCameraTorch={setCameraTorch}
+              setCameraFlash={setCameraFlash}
+            />
+            <MainRowActions
+              cameraMode={cameraMode}
+              handleTakePicture={
+                cameraMode === "picture" ? handleTakePicture : toggleRecord
+              }
+              isRecording={isRecording}
+              filterColor={filterColor}
+              setFilterColor={setFilterColor}
+            />
+            <BottomRowTools
+              setCameraMode={setCameraMode}
+              cameraMode={cameraMode}
+            />
+          </View>
+        </SafeAreaView>
+      </CameraView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
