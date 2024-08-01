@@ -35,3 +35,8 @@ This project is a React Native-based Snapchat Camera Clone. The app provides var
 
 
 ## Previews
+  <img src="https://github.com/user-attachments/assets/dc4d965f-f8d5-418e-875f-b447727edf18" width="350" height="6![IMG_1374](https://github.com/user-attachments/assets/0eacf9c9-305b-4327-86b4-93ce65e2bd14)
+00">
+  <img src="https://github.com/user-attachments/assets/ea43901e-6b42-4940-b2c5-36d2653c715c" width="350" height="600">
+  <img src="https://github.com/user-attachments/assets/dc4d965f-f8d5-418e-875f-b447727edf18" width="350" height="600">
+  
